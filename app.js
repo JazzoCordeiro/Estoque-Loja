@@ -4,6 +4,10 @@ import { engine } from 'express-handlebars';
 import fileupload from 'express-fileupload';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs'
+
+
+
 
 const app = express();
 
@@ -85,6 +89,38 @@ app.post('/cadastrar', (req, res) => {
         });
     });
 });
+
+//rota de remoção
+app.get('/remover/:codigo/:imagem', function(req, res) {
+    const { codigo, imagem } = req.params;
+
+    const sql = 'DELETE FROM produtos WHERE codigo = ?';
+    configDB.query(sql, [codigo], function(err, resultado) {
+        if (err) {
+            console.error('Erro ao remover do banco:', err);
+            return res.redirect('/cadastrar?erro=Erro ao remover produto.');
+        }
+
+        // Caminho da imagem com path.join (mais seguro)
+        const caminhoImagem = path.join(__dirname, 'imagens', imagem);
+
+        // Remove a imagem do disco
+        fs.unlink(caminhoImagem, function(erroImagem) {
+            if (erroImagem) {
+                console.warn(' Falha ao remover a imagem:', erroImagem.message);
+                return res.redirect('/?erro=Produto removido, mas não a imagem.');
+            }
+
+            console.log(' Produto e imagem removidos com sucesso');
+            res.redirect('/?sucesso=Produto removido com sucesso!');
+        });
+    });
+});
+
+
+
+
+
 
 app.listen(8080, () => {
     console.log('Servidor rodando em http://localhost:8080');
