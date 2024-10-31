@@ -1,0 +1,25 @@
+{
+  "name": "fullstack-node",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "express",
+    "express-handlebars",
+    "bootstrap",
+    "mysql"
+  ],
+  "author": "Jazzo Cordeiro",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "bootstrap": "^5.3.5",
+    "express": "^5.1.0",
+    "express-handlebars": "^8.0.1",
+    "mysql2": "^3.14.0",
+    "nodemon": "^3.1.9"
+  }
+}
