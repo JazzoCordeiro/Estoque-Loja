@@ -1,16 +1,22 @@
 <main>
-    <div class="container">lalala</div>
-    <div class="row"></div>
-    <div class="col-6 offset-3">
-        <form>
-            <input type="text" class="form-control" placeholder="Nome do produto">
-            <input type="number" class="form-control" placeholder="Valor do produto">
-            <input type="file" class="form-control">
-            <input type="submit" class="btn" value="cadastrar">
+  <div class="container">
+    <div class="row">
+      <div class="col-6 offset-3">
+        <form action="/cadastrar" method="post">
+          <div class="mb-3">
+            <input type="text" class="form-control" placeholder="Nome do produto" name="nome" required aria-label="Nome do produto">
+          </div>
+          <div class="mb-3">
+            <input type="number" class="form-control" placeholder="Valor do produto" name="valor" required aria-label="Valor do produto">
+          </div>
+          <div class="mb-3">
+            <input type="file" class="form-control" name="imagem" aria-label="Imagem do produto">
+          </div>
+          <div class="mb-3">
+            <input type="submit" class="btn btn-primary" value="Cadastrar">
+            </div>
         </form>
     </div>
-
-
-
-
+    </div>
+  </div>
 </main>
