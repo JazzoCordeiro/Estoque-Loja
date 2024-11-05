@@ -12,6 +12,9 @@ app.engine('handlebars', engine());
 app.set('view engine', 'handlebars');
 app.set('views', './views');
 
+app.use(express.json());
+app.use(express.urlencoded({extended:false}));
+
 const configDB = mysql.createConnection({
     host: 'localhost',
     user:'root',
@@ -26,6 +29,11 @@ configDB.connect(function(erro){
 
 app.get('/', function(req, res){
     res.render('formulario')
+})
+
+app.post('/cadastrar', function(req, res){
+    console.log(req.body);
+    res.end();
 })
 
 app.listen(8080)
