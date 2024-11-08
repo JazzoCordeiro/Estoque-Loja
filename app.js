@@ -1,8 +1,11 @@
 import express from 'express';
 import mysql from 'mysql2'
 import { engine } from 'express-handlebars';
+import fileupload from 'express-fileupload';
 
 const app = express();
+
+app.use(fileupload());
 
 app.use('/bootstrap', express.static('./node_modules/bootstrap/dist'));
 
@@ -33,6 +36,7 @@ app.get('/', function(req, res){
 
 app.post('/cadastrar', function(req, res){
     console.log(req.body);
+    req.files.imagem.mv(__dirname + 'imagens/' + req.files.imagem.name);
     res.end();
 })
 
