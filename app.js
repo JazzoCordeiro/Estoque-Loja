@@ -120,8 +120,6 @@ app.get('/remover/:codigo/:imagem', function(req, res) {
 
 
 
-
-
 app.listen(8080, () => {
     console.log('Servidor rodando em http://localhost:8080');
 });
