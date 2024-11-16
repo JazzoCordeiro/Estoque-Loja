@@ -98,7 +98,7 @@ app.get('/remover/:codigo/:imagem', function(req, res) {
     configDB.query(sql, [codigo], function(err, resultado) {
         if (err) {
             console.error('Erro ao remover do banco:', err);
-            return res.redirect('/cadastrar?erro=Erro ao remover produto.');
+            return res.redirect('/?erro=Erro ao remover produto.');
         }
 
         // Caminho da imagem com path.join (mais seguro)
@@ -118,7 +118,11 @@ app.get('/remover/:codigo/:imagem', function(req, res) {
 });
 
 
+//rota de redirecionamento para formulario de alteração.
 
+app.get('/formEdit/:codigo', function(req, res){
+    
+})
 
 app.listen(8080, () => {
     console.log('Servidor rodando em http://localhost:8080');
