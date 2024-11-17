@@ -121,7 +121,7 @@ app.get('/remover/:codigo/:imagem', function(req, res) {
 //rota de redirecionamento para formulario de alteração.
 
 app.get('/formEdit/:codigo', function(req, res){
-    
+    res.render('formEdit')
 })
 
 app.listen(8080, () => {

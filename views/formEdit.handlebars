@@ -1,0 +1,26 @@
+<main>
+  <div class="container">
+    <div class="row">
+      <div class="col-6 offset-3">
+        <form action="/editar" method="post" enctype="multipart/form-data">
+           <div class="mb-3">
+            <input type="number" name="codigo">
+          </div>
+          <div class="mb-3">
+            <input type="text" class="form-control" placeholder="Nome do produto" name="nome" required aria-label="Nome do produto">
+          </div>
+          <div class="mb-3">
+            <input type="number" step="0.01" class="form-control" placeholder="Valor do produto" name="valor" required aria-label="Valor do produto">
+          </div>
+          <div class="mb-3">
+            <input type="file" class="form-control" name="imagem" aria-label="Imagem do produto">
+          </div>
+          <div class="mb-3">
+            <input type="submit" class="btn btn-primary" value="Salvar">
+            <a href="/" class="btn btn-secondary" role="button">Cancelar</a>
+            </div>
+        </form>
+    </div>
+    </div>
+  </div>
+</main>
