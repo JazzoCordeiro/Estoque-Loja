@@ -120,9 +120,22 @@ app.get('/remover/:codigo/:imagem', function(req, res) {
 
 //rota de redirecionamento para formulario de alteração.
 
-app.get('/formEdit/:codigo', function(req, res){
-    res.render('formEdit')
-})
+app.get('/formEdit/:codigo', function(req, res) {
+    const codigo = req.params.codigo;
+
+    configDB.query('SELECT * FROM produtos WHERE codigo = ?', [codigo], function(err, results) {
+        if (err) {
+            console.error("Erro ao buscar produto:", err);
+            return res.redirect('/?erro=Erro ao buscar produto.');
+        }
+
+        if (results.length === 0) {
+            return res.redirect('/?erro=Produto não encontrado.');
+        }
+
+        res.render('formEdit', { produto: results[0] });
+    });
+});
 
 app.listen(8080, () => {
     console.log('Servidor rodando em http://localhost:8080');
