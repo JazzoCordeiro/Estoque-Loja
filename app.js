@@ -137,6 +137,22 @@ app.get('/formEdit/:codigo', function(req, res) {
     });
 });
 
+app.post('/editar', function(req, res){
+//obter os dados do formulário
+
+let nome = req.body.nome;
+let valor = req.body.valor;
+let codigo = req.body.codigo;
+let nomeImagem = req.body.nomeImagem;
+let imagem = req.files.imagem.name;
+
+//exibir os dados
+
+//finalizar a rota
+
+
+})
+
 app.listen(8080, () => {
     console.log('Servidor rodando em http://localhost:8080');
 });
