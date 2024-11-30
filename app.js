@@ -144,9 +144,15 @@ let nome = req.body.nome;
 let valor = req.body.valor;
 let codigo = req.body.codigo;
 let nomeImagem = req.body.nomeImagem;
-let imagem = req.files.imagem.name;
 
-//exibir os dados
+
+//exibir os dados - definir o tipo de edição
+try{
+    let imagem = req.files.imagem.name;
+    res.write('A imagem será alterada também!')
+}catch(err){
+    res.write('Não haverá alteração de imagem')
+};
 
 //finalizar a rota
 
