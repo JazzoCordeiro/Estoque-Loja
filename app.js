@@ -137,27 +137,40 @@ app.get('/formEdit/:codigo', function(req, res) {
     });
 });
 
-app.post('/editar', function(req, res){
-//obter os dados do formulário
+app.post('/editar', function(req, res) {
+    const nome = req.body.nome;
+    const valor = parseFloat(req.body.valor);
+    const codigo = parseInt(req.body.codigo);
+    const nomeImagem = req.body.nomeImagem;
 
-let nome = req.body.nome;
-let valor = req.body.valor;
-let codigo = req.body.codigo;
-let nomeImagem = req.body.nomeImagem;
+    // Verifica se a imagem foi enviada
+    let sql, params;
+    if (req.files && req.files.imagem) {
+        let imagem = req.files.imagem;
+
+        // Você pode mover o arquivo para o local desejado, se necessário
+        // imagem.mv('./public/imagens/' + imagem.name);
+
+        sql = `UPDATE produtos SET nome = ?, valor = ?, imagem = ? WHERE codigo = ?`;
+        params = [nome, valor, imagem.name, codigo];
+    } else {
+        sql = `UPDATE produtos SET nome = ?, valor = ? WHERE codigo = ?`;
+        params = [nome, valor, codigo];
+    }
+
+    // Executa a query com segurança
+    db.query(sql, params, function(err, result) {
+        if (err) {
+            console.error('Erro ao atualizar o produto:', err);
+            return res.status(500).send('Erro ao atualizar o produto.');
+        }
+
+        res.send('Produto atualizado com sucesso!');
+    });
+});
 
 
-//exibir os dados - definir o tipo de edição
-try{
-    let imagem = req.files.imagem.name;
-    res.write('A imagem será alterada também!')
-}catch(err){
-    res.write('Não haverá alteração de imagem')
-};
 
-//finalizar a rota
-
-
-})
 
 app.listen(8080, () => {
     console.log('Servidor rodando em http://localhost:8080');
