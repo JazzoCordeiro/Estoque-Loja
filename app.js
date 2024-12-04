@@ -141,32 +141,57 @@ app.post('/editar', function(req, res) {
     const nome = req.body.nome;
     const valor = parseFloat(req.body.valor);
     const codigo = parseInt(req.body.codigo);
-    const nomeImagem = req.body.nomeImagem;
+    const nomeImagemAntiga = req.body.nomeImagem; // vem como campo oculto no form
 
-    // Verifica se a imagem foi enviada
-    let sql, params;
+    // Se uma nova imagem for enviada
     if (req.files && req.files.imagem) {
-        let imagem = req.files.imagem;
+        const novaImagem = req.files.imagem;
+        const caminhoNovaImagem = path.join(__dirname, 'imagens', novaImagem.name);
+        const caminhoImagemAntiga = path.join(__dirname, 'imagens', nomeImagemAntiga);
 
-        // Você pode mover o arquivo para o local desejado, se necessário
-        // imagem.mv('./public/imagens/' + imagem.name);
+        // Apaga a imagem antiga
+        fs.unlink(caminhoImagemAntiga, (err) => {
+            if (err && err.code !== 'ENOENT') {
+                console.error('Erro ao apagar imagem antiga:', err);
+                return res.redirect('/?erro=Erro ao apagar imagem antiga.');
+            }
 
-        sql = `UPDATE produtos SET nome = ?, valor = ?, imagem = ? WHERE codigo = ?`;
-        params = [nome, valor, imagem.name, codigo];
+            // Move a nova imagem para a pasta /imagens
+            novaImagem.mv(caminhoNovaImagem, (err) => {
+                if (err) {
+                    console.error('Erro ao salvar nova imagem:', err);
+                    return res.redirect('/?erro=Erro ao salvar nova imagem.');
+                }
+
+                // Atualiza no banco
+                const sql = `UPDATE produtos SET nome = ?, valor = ?, imagem = ? WHERE codigo = ?`;
+                const params = [nome, valor, novaImagem.name, codigo];
+
+                configDB.query(sql, params, (err) => {
+                    if (err) {
+                        console.error('Erro ao atualizar no banco:', err);
+                        return res.redirect('/?erro=Erro ao atualizar produto.');
+                    }
+
+                    return res.redirect('/?sucesso=Produto atualizado com nova imagem!');
+                });
+            });
+        });
+
     } else {
-        sql = `UPDATE produtos SET nome = ?, valor = ? WHERE codigo = ?`;
-        params = [nome, valor, codigo];
+        // Sem nova imagem: só atualiza nome e valor
+        const sql = `UPDATE produtos SET nome = ?, valor = ? WHERE codigo = ?`;
+        const params = [nome, valor, codigo];
+
+        configDB.query(sql, params, (err) => {
+            if (err) {
+                console.error('Erro ao atualizar produto:', err);
+                return res.redirect('/?erro=Erro ao atualizar produto.');
+            }
+
+            return res.redirect('/?sucesso=Produto atualizado (imagem mantida)!');
+        });
     }
-
-    // Executa a query com segurança
-    db.query(sql, params, function(err, result) {
-        if (err) {
-            console.error('Erro ao atualizar o produto:', err);
-            return res.status(500).send('Erro ao atualizar o produto.');
-        }
-
-        res.send('Produto atualizado com sucesso!');
-    });
 });
 
 
