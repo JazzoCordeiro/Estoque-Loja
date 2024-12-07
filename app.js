@@ -4,10 +4,7 @@ import { engine } from 'express-handlebars';
 import fileupload from 'express-fileupload';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import fs from 'fs'
-
-
-
+import fs from 'fs';
 
 const app = express();
 
@@ -24,8 +21,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use('/bootstrap', express.static('./node_modules/bootstrap/dist'));
 app.use('/css', express.static('./css'));
 app.use('/imagens', express.static('./imagens')); // para acessar imagens
-
-
 
 // View engine
 app.engine('handlebars', engine());
@@ -47,10 +42,9 @@ configDB.connect((erro) => {
 
 // Rota principal
 app.get('/', (req, res) => {
-    const { sucesso, erro } = req.query; // lê os parâmetros da URL
+    const { sucesso, erro } = req.query;
 
     const sql = 'SELECT * FROM produtos';
-
     configDB.query(sql, (err, rows) => {
         if (err) {
             return res.render('formulario', {
@@ -76,54 +70,49 @@ app.post('/cadastrar', (req, res) => {
     }
 
     const imagem = req.files.imagem;
-    const uploadPath = path.join(__dirname, 'imagens', imagem.name);
+    const nomeImagemUnico = `${Date.now()}_${imagem.name}`;
+    const uploadPath = path.join(__dirname, 'imagens', nomeImagemUnico);
 
     imagem.mv(uploadPath, (err) => {
         if (err) return res.redirect('/?erro=Erro ao salvar imagem.');
 
-        let sql = 'INSERT INTO produtos (nome, valor, imagem) VALUES (?, ?, ?)';
-        configDB.query(sql, [nome, valor, imagem.name], (err) => {
+        const sql = 'INSERT INTO produtos (nome, valor, imagem) VALUES (?, ?, ?)';
+        configDB.query(sql, [nome, valor, nomeImagemUnico], (err) => {
             if (err) return res.redirect('/?erro=Erro ao salvar no banco.');
-
             res.redirect('/?sucesso=Produto cadastrado com sucesso!');
         });
     });
 });
 
-//rota de remoção
-app.get('/remover/:codigo/:imagem', function(req, res) {
+// Rota de remoção
+app.get('/remover/:codigo/:imagem', (req, res) => {
     const { codigo, imagem } = req.params;
 
     const sql = 'DELETE FROM produtos WHERE codigo = ?';
-    configDB.query(sql, [codigo], function(err, resultado) {
+    configDB.query(sql, [codigo], (err) => {
         if (err) {
             console.error('Erro ao remover do banco:', err);
             return res.redirect('/?erro=Erro ao remover produto.');
         }
 
-        // Caminho da imagem com path.join (mais seguro)
         const caminhoImagem = path.join(__dirname, 'imagens', imagem);
-
-        // Remove a imagem do disco
-        fs.unlink(caminhoImagem, function(erroImagem) {
+        fs.unlink(caminhoImagem, (erroImagem) => {
             if (erroImagem) {
-                console.warn(' Falha ao remover a imagem:', erroImagem.message);
+                console.warn('Falha ao remover a imagem:', erroImagem.message);
                 return res.redirect('/?erro=Produto removido, mas não a imagem.');
             }
 
-            console.log(' Produto e imagem removidos com sucesso');
+            console.log('Produto e imagem removidos com sucesso');
             res.redirect('/?sucesso=Produto removido com sucesso!');
         });
     });
 });
 
-
-//rota de redirecionamento para formulario de alteração.
-
-app.get('/formEdit/:codigo', function(req, res) {
+// Formulário de edição
+app.get('/formEdit/:codigo', (req, res) => {
     const codigo = req.params.codigo;
 
-    configDB.query('SELECT * FROM produtos WHERE codigo = ?', [codigo], function(err, results) {
+    configDB.query('SELECT * FROM produtos WHERE codigo = ?', [codigo], (err, results) => {
         if (err) {
             console.error("Erro ao buscar produto:", err);
             return res.redirect('/?erro=Erro ao buscar produto.');
@@ -137,37 +126,30 @@ app.get('/formEdit/:codigo', function(req, res) {
     });
 });
 
-app.post('/editar', function(req, res) {
-    const nome = req.body.nome;
-    const valor = parseFloat(req.body.valor);
-    const codigo = parseInt(req.body.codigo);
-    const nomeImagemAntiga = req.body.nomeImagem; // vem como campo oculto no form
+// Edição
+app.post('/editar', (req, res) => {
+    const { nome, valor, codigo, nomeImagem } = req.body;
 
-    // Se uma nova imagem for enviada
     if (req.files && req.files.imagem) {
         const novaImagem = req.files.imagem;
-        const caminhoNovaImagem = path.join(__dirname, 'imagens', novaImagem.name);
-        const caminhoImagemAntiga = path.join(__dirname, 'imagens', nomeImagemAntiga);
+        const nomeImagemUnico = `${Date.now()}_${novaImagem.name}`;
+        const caminhoNovaImagem = path.join(__dirname, 'imagens', nomeImagemUnico);
+        const caminhoImagemAntiga = path.join(__dirname, 'imagens', nomeImagem);
 
-        // Apaga a imagem antiga
         fs.unlink(caminhoImagemAntiga, (err) => {
             if (err && err.code !== 'ENOENT') {
                 console.error('Erro ao apagar imagem antiga:', err);
                 return res.redirect('/?erro=Erro ao apagar imagem antiga.');
             }
 
-            // Move a nova imagem para a pasta /imagens
             novaImagem.mv(caminhoNovaImagem, (err) => {
                 if (err) {
                     console.error('Erro ao salvar nova imagem:', err);
                     return res.redirect('/?erro=Erro ao salvar nova imagem.');
                 }
 
-                // Atualiza no banco
                 const sql = `UPDATE produtos SET nome = ?, valor = ?, imagem = ? WHERE codigo = ?`;
-                const params = [nome, valor, novaImagem.name, codigo];
-
-                configDB.query(sql, params, (err) => {
+                configDB.query(sql, [nome, parseFloat(valor), nomeImagemUnico, parseInt(codigo)], (err) => {
                     if (err) {
                         console.error('Erro ao atualizar no banco:', err);
                         return res.redirect('/?erro=Erro ao atualizar produto.');
@@ -177,13 +159,9 @@ app.post('/editar', function(req, res) {
                 });
             });
         });
-
     } else {
-        // Sem nova imagem: só atualiza nome e valor
         const sql = `UPDATE produtos SET nome = ?, valor = ? WHERE codigo = ?`;
-        const params = [nome, valor, codigo];
-
-        configDB.query(sql, params, (err) => {
+        configDB.query(sql, [nome, parseFloat(valor), parseInt(codigo)], (err) => {
             if (err) {
                 console.error('Erro ao atualizar produto:', err);
                 return res.redirect('/?erro=Erro ao atualizar produto.');
@@ -194,9 +172,7 @@ app.post('/editar', function(req, res) {
     }
 });
 
-
-
-
+// Inicia o servidor
 app.listen(8080, () => {
     console.log('Servidor rodando em http://localhost:8080');
 });
