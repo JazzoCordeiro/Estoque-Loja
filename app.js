@@ -63,7 +63,7 @@ app.get('/', (req, res) => {
 
 // Rota de cadastro
 app.post('/cadastrar', (req, res) => {
-    const { nome, valor } = req.body;
+    const { nome, valor, quantidade } = req.body;
 
     if (!req.files || !req.files.imagem) {
         return res.redirect('/?erro=Imagem não foi enviada.');
@@ -76,8 +76,8 @@ app.post('/cadastrar', (req, res) => {
     imagem.mv(uploadPath, (err) => {
         if (err) return res.redirect('/?erro=Erro ao salvar imagem.');
 
-        const sql = 'INSERT INTO produtos (nome, valor, imagem) VALUES (?, ?, ?)';
-        configDB.query(sql, [nome, valor, nomeImagemUnico], (err) => {
+        const sql = 'INSERT INTO produtos (nome, valor, imagem, quantidade) VALUES (?, ?, ?, ?)';
+        configDB.query(sql, [nome, valor, nomeImagemUnico, quantidade], (err) => {
             if (err) return res.redirect('/?erro=Erro ao salvar no banco.');
             res.redirect('/?sucesso=Produto cadastrado com sucesso!');
         });
@@ -128,7 +128,7 @@ app.get('/formEdit/:codigo', (req, res) => {
 
 // Edição
 app.post('/editar', (req, res) => {
-    const { nome, valor, codigo, nomeImagem } = req.body;
+    const { nome, valor, codigo, nomeImagem, quantidade } = req.body;
 
     if (req.files && req.files.imagem) {
         const novaImagem = req.files.imagem;
@@ -148,8 +148,8 @@ app.post('/editar', (req, res) => {
                     return res.redirect('/?erro=Erro ao salvar nova imagem.');
                 }
 
-                const sql = `UPDATE produtos SET nome = ?, valor = ?, imagem = ? WHERE codigo = ?`;
-                configDB.query(sql, [nome, parseFloat(valor), nomeImagemUnico, parseInt(codigo)], (err) => {
+                const sql = `UPDATE produtos SET nome = ?, valor = ?, imagem = ?, quantidade = ? WHERE codigo = ?`;
+                configDB.query(sql, [nome, parseFloat(valor), nomeImagemUnico, parseInt(quantidade), parseInt(codigo)], (err) => {
                     if (err) {
                         console.error('Erro ao atualizar no banco:', err);
                         return res.redirect('/?erro=Erro ao atualizar produto.');
@@ -160,8 +160,8 @@ app.post('/editar', (req, res) => {
             });
         });
     } else {
-        const sql = `UPDATE produtos SET nome = ?, valor = ? WHERE codigo = ?`;
-        configDB.query(sql, [nome, parseFloat(valor), parseInt(codigo)], (err) => {
+        const sql = `UPDATE produtos SET nome = ?, valor = ?, quantidade = ? WHERE codigo = ?`;
+        configDB.query(sql, [nome, parseFloat(valor), parseInt(quantidade), parseInt(codigo)], (err) => {
             if (err) {
                 console.error('Erro ao atualizar produto:', err);
                 return res.redirect('/?erro=Erro ao atualizar produto.');

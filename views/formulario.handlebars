@@ -25,6 +25,9 @@
             <input type="number" step="0.01" class="form-control" placeholder="Valor do produto" name="valor" required aria-label="Valor do produto">
           </div>
           <div class="mb-3">
+          <input type="number" name="quantidade" placeholder="Quantidade em estoque" class="form-control" required min="0">
+        </div>
+          <div class="mb-3">
             <input type="file" class="form-control" name="imagem" aria-label="Imagem do produto">
           </div>
           <div class="mb-3">
@@ -43,6 +46,7 @@
           <div class="textos">
           <p>{{nome}}</p>
           <p>R$ {{valor}}</p>
+          <p>Quantidade: {{quantidade}}</p>
           </div>
           <div class="btn">
           <a href="/formEdit/{{codigo}}" class="btn btn-warning">Alterar</a>
