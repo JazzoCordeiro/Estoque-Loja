@@ -17,7 +17,7 @@
   <div class="container">
     <div class="row">
       <div class="col-6 offset-3">
-        <form action="/cadastrar" method="post" enctype="multipart/form-data">
+        <form action="/cadastrar" method="post" enctype="multipart/form-data" id="formulario">
           <div class="mb-3">
             <input type="text" class="form-control" placeholder="Nome do produto" name="nome" required aria-label="Nome do produto">
           </div>
@@ -51,7 +51,10 @@
           <div class="btn">
           <a href="/formEdit/{{codigo}}" class="btn btn-warning">Alterar</a>
           <a href="/remover/{{codigo}}/{{imagem}}" class="btn btn-danger">Remover</a>
-          </div>
+              <form action="/baixar/{{codigo}}" method="post" class="baixar">
+        <button type="submit" class="btn btn-secondary baixar">-1</button>
+    </form>
+</div>
         </div>
       </div>
 

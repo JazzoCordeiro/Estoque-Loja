@@ -84,6 +84,21 @@ app.post('/cadastrar', (req, res) => {
     });
 });
 
+//baixar apenas 1
+app.post('/baixar/:codigo', (req, res) => {
+    const { codigo } = req.params;
+
+    const sql = 'UPDATE produtos SET quantidade = GREATEST(quantidade - 1, 0) WHERE codigo = ?';
+    configDB.query(sql, [codigo], (err) => {
+        if (err) {
+            console.error('Erro ao dar baixa:', err);
+            return res.redirect('/?erro=Erro ao dar baixa no estoque.');
+        }
+
+        return res.redirect('/?sucesso=Estoque atualizado com sucesso!');
+    });
+});
+
 // Rota de remoção
 app.get('/remover/:codigo/:imagem', (req, res) => {
     const { codigo, imagem } = req.params;
